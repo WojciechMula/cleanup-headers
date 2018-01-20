@@ -4,9 +4,9 @@
 
 This simple script helps in removing unnecessary includes from C/C++ files.
 
-Huge code base or legacy code usually means that implementation files are full
-of include files that piled up over years. Likewise, creating a new project by
-forking an old one might end up with tons of leftovers.
+A huge code base or legacy code usually means that implementation files are
+full of includes hat pilled up over years. Likewise, creating a new project by
+forking an old one ends up with tons of leftovers.
 
 
 How it works?
@@ -14,14 +14,16 @@ How it works?
 
 The only thing you need is **the full command** that creates an object file.
 
-Script systematically comments out one include file at once. When program/object
-file still compiles, then the commented out include is considered unneeded.
+The script systematically comments out one include file at once and recompiles
+source. When program/object file still compiles, then the commented out include
+is considered unneeded.
 
 
 How to use it?
 -----------------------------------------------------------
 
 Here's an example from my toy project https://github.com/WojciechMula/avx512popcnt-superoptimizer
+
 The head of the main program::
 
     $ head -n 15 avx512popcnt.cpp
