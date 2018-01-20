@@ -5,7 +5,7 @@
 This simple script helps in removing unnecessary includes from C/C++ files.
 
 A huge code base or legacy code usually means that implementation files are
-full of includes hat pilled up over years. Likewise, creating a new project by
+full of includes pilled up over years. Likewise, creating a new project by
 forking an old one ends up with tons of leftovers.
 
 
