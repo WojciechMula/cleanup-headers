@@ -95,6 +95,7 @@ class Application:
     def __init__(self, args):
         self.out     = sys.stdout
         self.cmdline = GCCCommandLine(args)
+        self.pid     = os.getpid()
 
         self.quiet   = True
         self.overwrite = True
@@ -125,7 +126,8 @@ class Application:
 
 
     def check(self):
-        dstpath = 'ch-%s' % self.cmdline.get_path()
+        dirname, filename = os.path.split(self.cmdline.get_path())
+        dstpath = 'ch-%x-%s' % (self.pid, filename)
         self.cmdline.set_path(dstpath)
 
         self.not_needed = []
