@@ -73,3 +73,11 @@ Now the script comes::
     avx512popcnt.cpp was updated
 
 It turned out that eight includes weren't needed at all.
+
+
+Configuration
+-----------------------------------------------------------
+
+You can control behaviour of the script via a config file. The config
+file must be located either in ``~/.config/cleanup-headers/config.ini``
+or its path must be provided by variable ``CLEANUP_HEADERS_CONFIG``.
