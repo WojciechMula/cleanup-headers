@@ -1,6 +1,10 @@
 import sys
 import os
 import os.path
+try:
+    import configparser
+except ImportError:
+    import ConfigParser as configparser
 
 
 class ProgramError(ValueError):
@@ -63,7 +67,7 @@ class IncludeLine(object):
             return '// %s' % self.line
 
 
-class GCCCommandLine(object):
+class CommandLine(object):
     def __init__(self, args):
         self.args   = args[:]
         self.index  = None
@@ -91,14 +95,39 @@ class GCCCommandLine(object):
         return ' '.join(self.args)
 
 
-class Application:
+class GCCCommandLine(CommandLine):
     def __init__(self, args):
-        self.out     = sys.stdout
-        self.cmdline = GCCCommandLine(args)
-        self.pid     = os.getpid()
+        super(GCCCommandLine, self).__init__(args)
 
-        self.quiet   = True
-        self.overwrite = True
+        self.remove_optimization_options()
+        self.quit_on_first_error()
+        self.do_not_create_object()
+
+
+    def remove_optimization_options(self):
+        for opt in ['-O1', '-O2', '-O3']:
+            while True:
+                try:
+                    self.args.remove(opt)
+                except ValueError:
+                    break
+
+
+    def quit_on_first_error(self):
+        self.args.append('-Wfatal-errors')
+
+
+    def do_not_create_object(self):
+        self.args.append('-fsyntax-only')
+
+
+class Application:
+    def __init__(self, config, cmdline):
+        self.config  = config
+        self.cmdline = cmdline
+
+        self.out     = sys.stdout
+        self.pid     = os.getpid()
 
         srcpath = self.cmdline.get_path()
         if not os.path.exists(srcpath):
@@ -156,7 +185,7 @@ class Application:
             tmp = [item.get_path() for item in self.not_needed]
             self.write('not required %s\n' % (', '.join(tmp)))
 
-            if self.overwrite:
+            if self.config.overwrite:
                 with open(srcpath, 'wt') as f:
                     self.file.write_stripped(f)
 
@@ -167,17 +196,65 @@ class Application:
 
     def can_compile(self):
         cmdline = str(self.cmdline)
-        if self.quiet:
+        if self.config.quiet:
             cmdline += ' 2> /dev/null'
 
         ret = os.system(cmdline)
         return ret == 0
 
 
+class ConfigParser(configparser.ConfigParser):
+    def tryget(self, section, value, default):
+        try:
+            return self.get(section, value)
+        except configparser.NoSectionError:
+            return default
+        except configparser.NoOptionError:
+            return default
+
+    def trygetboolean(self, section, value, default):
+        try:
+            return self.getboolean(section, value)
+        except configparser.NoOptionError:
+            return default
+        except configparser.NoOptionError:
+            return default
+
+
+class Configuration(object):
+    def __init__(self):
+        self.load()
+
+    def load(self):
+        p = ConfigParser(allow_no_value=True)
+        p.read(list(self.config_paths()))
+
+        self.quiet      = p.trygetboolean('general', 'quiet', True)
+        self.overwrite  = p.trygetboolean('general', 'overwrite', True)
+        self.mode       = p.tryget('compiler', 'mode', None)
+
+
+    def config_paths(self):
+        try:
+            yield os.environ['CLEANUP_HEADERS_CONFIG']
+        except KeyError:
+            pass
+
+        yield '~/.config/cleanup-header/config.ini'
+
+
 def main():
-    app = Application(sys.argv[1:])
+    conf = Configuration()
+    cmdlineclass = CommandLine
+    if conf.mode == 'gcc':
+        cmdlineclass = GCCCommandLine
+
+    cmdline = cmdlineclass(sys.argv[1:])
+    app = Application(conf, cmdline)
     try:
         app.run()
+    except ProgramError as e:
+        print e
     except:
         import traceback
         traceback.print_exc()
