@@ -18,6 +18,12 @@ The script systematically comments out one include file at once and recompiles
 source. When program/object file still compiles, then the commented out include
 is considered unneeded.
 
+**Caveat**, noticed by my colleague Leszek: such a mechanical way of removing
+includes may lead to creating indirect dependencies. Some symbols required by
+implementation might be provided (accidentally) by includes present in headers
+files. When one remove include from the implementation file, then later changes
+to the header file might break the compilation.
+
 
 How to use it?
 -----------------------------------------------------------
