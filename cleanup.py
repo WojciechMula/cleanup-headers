@@ -143,8 +143,8 @@ class Application:
 
 
     def run(self):
-        self.write('Checking compilation... ')
-        if False and not self.can_compile():
+        self.write('Checking compilation of %s... ' % self.cmdline.get_path())
+        if not self.can_compile():
             self.write('failed\n')
             return
         else:
