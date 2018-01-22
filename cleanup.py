@@ -72,7 +72,7 @@ class GCCCommandLine(object):
         for i, arg in enumerate(self.args):
             if arg.endswith('.c') or arg.endswith('.cpp'):
                 self.index  = i
-                self.source = self.args[i]
+                self.source = arg
                 break
 
         if self.index is None:
