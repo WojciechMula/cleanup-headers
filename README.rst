@@ -18,11 +18,15 @@ The script systematically comments out one include file at once and recompiles
 source. When program/object file still compiles, then the commented out include
 is considered unneeded.
 
-**Caveat**, noticed by my colleague Leszek: such a mechanical way of removing
+**Caveat 1** (noticed by my colleague Leszek): such a mechanical way of removing
 includes may lead to creating indirect dependencies. Some symbols required by
 implementation might be provided (accidentally) by includes present in headers
 files. When one remove include from the implementation file, then later changes
 to the header file might break the compilation.
+
+**Caveat 2**: the script doesn't interpret any other preprocessor directive
+than ``#include``. Conditional includes enabled by ``ifdefs`` will be removed
+unconditionally.
 
 
 How to use it?
@@ -80,4 +84,5 @@ Configuration
 
 You can control behaviour of the script via a config file. The config
 file must be located either in ``~/.config/cleanup-headers/config.ini``
-or its path must be provided by variable ``CLEANUP_HEADERS_CONFIG``.
+or its path must be provided by the environment variable
+``CLEANUP_HEADERS_CONFIG``.
