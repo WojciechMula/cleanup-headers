@@ -244,14 +244,14 @@ class Configuration(object):
 
 
 def main():
-    conf = Configuration()
-    cmdlineclass = CommandLine
-    if conf.mode == 'gcc':
-        cmdlineclass = GCCCommandLine
-
-    cmdline = cmdlineclass(sys.argv[1:])
-    app = Application(conf, cmdline)
     try:
+        conf = Configuration()
+        cmdlineclass = CommandLine
+        if conf.mode == 'gcc':
+            cmdlineclass = GCCCommandLine
+
+        cmdline = cmdlineclass(sys.argv[1:])
+        app = Application(conf, cmdline)
         app.run()
     except ProgramError as e:
         print e
