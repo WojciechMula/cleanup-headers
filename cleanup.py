@@ -215,7 +215,7 @@ class ConfigParser(configparser.ConfigParser):
     def trygetboolean(self, section, value, default):
         try:
             return self.getboolean(section, value)
-        except configparser.NoOptionError:
+        except configparser.NoSectionError:
             return default
         except configparser.NoOptionError:
             return default
