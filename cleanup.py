@@ -254,7 +254,8 @@ def main():
         app = Application(conf, cmdline)
         app.run()
     except ProgramError as e:
-        print e
+        sys.stderr.write(str(e))
+        sys.stderr.write('\n')
     except:
         import traceback
         traceback.print_exc()
