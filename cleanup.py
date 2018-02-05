@@ -229,7 +229,7 @@ class Configuration(object):
 
     def load(self):
         p = ConfigParser(allow_no_value=True)
-        p.read(list(self.config_paths()))
+        p.read([os.path.expanduser(path) for path in self.config_paths()])
 
         self.quiet      = p.trygetboolean('general', 'quiet', True)
         self.overwrite  = p.trygetboolean('general', 'overwrite', True)
@@ -242,7 +242,7 @@ class Configuration(object):
         except KeyError:
             pass
 
-        yield '~/.config/cleanup-header/config.ini'
+        yield '~/.config/cleanup-headers/config.ini'
 
 
 def main():
