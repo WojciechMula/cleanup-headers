@@ -1,6 +1,8 @@
 import sys
 import os
 import os.path
+import subprocess
+
 try:
     import configparser
 except ImportError:
@@ -199,7 +201,7 @@ class Application:
         if self.config.quiet:
             cmdline += ' 2> /dev/null'
 
-        ret = os.system(cmdline)
+        ret = subprocess.call(cmdline, shell=True)
         return ret == 0
 
 
@@ -253,6 +255,9 @@ def main():
         cmdline = cmdlineclass(sys.argv[1:])
         app = Application(conf, cmdline)
         app.run()
+    except KeyboardInterrupt:
+        sys.stdout.write('\nInterrupted\n')
+        pass
     except ProgramError as e:
         sys.stderr.write(str(e))
         sys.stderr.write('\n')
