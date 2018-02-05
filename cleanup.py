@@ -162,8 +162,8 @@ class Application:
         self.cmdline.set_path(dstpath)
 
         self.not_needed = []
-        for include in self.file.includes:
-            self.write('Removing %s... ' % include.get_path())
+        for index, include in enumerate(self.file.includes):
+            self.write('Removing %s (%d/%d)... ' % (include.get_path(), index + 1, len(self.file.includes)))
             include.enable(False)
             with open(dstpath, 'wt') as f:
                 self.file.write(f)
