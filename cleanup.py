@@ -166,17 +166,21 @@ class Application:
         for index, include in enumerate(self.file.includes):
             self.write('Removing %s (%d/%d)... ' % (include.get_path(), index + 1, len(self.file.includes)))
             include.enable(False)
-            with open(dstpath, 'wt') as f:
-                self.file.write(f)
+            try:
+                with open(dstpath, 'wt') as f:
+                    self.file.write(f)
 
-            if self.can_compile():
-                self.write('OK\n')
-                self.not_needed.append(include)
-            else:
-                include.enable(True)
-                self.write('not possible\n')
-
-            os.remove(dstpath)
+                if self.can_compile():
+                    self.write('OK\n')
+                    self.not_needed.append(include)
+                else:
+                    include.enable(True)
+                    self.write('not possible\n')
+            finally:
+                try:
+                    os.remove(dstpath)
+                except:
+                    pass
 
 
     def fix(self):
