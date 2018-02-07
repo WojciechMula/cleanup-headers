@@ -15,6 +15,8 @@ class ProgramError(ValueError):
 
 
 INCLUDE = '#include '
+DELETE  = 'delete'
+COMMENT = 'comment'
 
 class File(object):
     def __init__(self, file):
@@ -37,12 +39,14 @@ class File(object):
             file.write(str(l))
 
 
-    def write_stripped(self, file):
+    def write_stripped(self, file, callback):
         for l in self.lines:
-            if type(l) is IncludeLine and not l.enabled:
-                continue
-
-            file.write(str(l))
+            if type(l) is IncludeLine:
+                ret = callback(l)
+                if ret is not None:
+                    file.write(ret)
+            else:
+                file.write(l)
 
 
 class IncludeLine(object):
@@ -194,11 +198,26 @@ class Application:
 
             if self.config.overwrite:
                 with open(srcpath, 'wt') as f:
-                    self.file.write_stripped(f)
+                    self.file.write_stripped(f, self.get_write_callback())
 
                 self.write('%s was updated\n' % srcpath)
 
         self.write('\n')
+
+
+    def get_write_callback(self):
+
+        def remove_includes(include):
+            if include.enabled:
+                return str(include)
+
+        def comment_out_includes(include):
+            return str(include)
+
+        if self.config.modification == DELETE:
+            return remove_includes
+        else:
+            return comment_out_includes
 
 
     def can_compile(self):
@@ -236,9 +255,13 @@ class Configuration(object):
         p = ConfigParser(allow_no_value=True)
         p.read([os.path.expanduser(path) for path in self.config_paths()])
 
-        self.quiet      = p.trygetboolean('general', 'quiet', True)
-        self.overwrite  = p.trygetboolean('general', 'overwrite', True)
-        self.mode       = p.tryget('compiler', 'mode', None)
+        self.quiet        = p.trygetboolean('general', 'quiet', True)
+        self.overwrite    = p.trygetboolean('general', 'overwrite', True)
+        self.modification = p.tryget('general', 'modification', DELETE).lower()
+        self.mode         = p.tryget('compiler', 'mode', None)
+
+        if self.modification not in (DELETE, COMMENT):
+            raise ProgramError("Setting general.modification must be either '%s' or '%s'" % (DELETE, COMMENT))
 
 
     def config_paths(self):
