@@ -59,20 +59,20 @@ When run ``make``, we capture the command which builds the program::
 
 Now the script comes::
 
-    $ python cleanup.py g++ -Wall -Wextra -pedantic -std=c++14 -O3 avx512popcnt.cpp -o lineavx512popcnt
-    Checking compilation... OK
-    Removing cstdint... OK
-    Removing cstdlib... OK
-    Removing cstdio... OK
-    Removing cassert... not possible
-    Removing vector... OK
-    Removing memory... not possible
-    Removing random... not possible
-    Removing algorithm... OK
-    Removing bitset... OK
-    Removing sys/types.h... OK
-    Removing unistd.h... not possible
-    Removing binary.cpp... not possible
+    $ python cleanup.py g++ -Wall -Wextra -pedantic -std=c++14 -O3 avx512popcnt.cpp -o avx512popcnt
+    Checking compilation of avx512popcnt.cpp... OK
+    Removing cstdint (1/12)... OK
+    Removing cstdlib (2/12)... OK
+    Removing cstdio (3/12)... OK
+    Removing cassert (4/12)... not possible
+    Removing vector (5/12)... OK
+    Removing memory (6/12)... not possible
+    Removing random (7/12)... not possible
+    Removing algorithm (8/12)... OK
+    Removing bitset (9/12)... OK
+    Removing sys/types.h (10/12)... OK
+    Removing unistd.h (11/12)... not possible
+    Removing binary.cpp (12/12)... not possible
     avx512popcnt.cpp: not required cstdint, cstdlib, cstdio, vector, algorithm, bitset, sys/types.h
     avx512popcnt.cpp was updated
 
@@ -85,4 +85,5 @@ Configuration
 You can control behaviour of the script via a config file. The config
 file must be located either in ``~/.config/cleanup-headers/config.ini``
 or its path must be provided by the environment variable
-``CLEANUP_HEADERS_CONFIG``.
+``CLEANUP_HEADERS_CONFIG``. Please refer to the sample ``config.ini``
+for more details.
